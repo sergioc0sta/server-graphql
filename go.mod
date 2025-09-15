@@ -5,6 +5,7 @@ go 1.24.4
 require (
 	github.com/99designs/gqlgen v0.17.78
 	github.com/google/uuid v1.6.0
+	github.com/mattn/go-sqlite3 v1.14.32
 	github.com/vektah/gqlparser/v2 v2.5.30
 )
 
