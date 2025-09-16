@@ -7,28 +7,55 @@ import (
 )
 
 type Category struct {
-	db *sql.DB
-	ID string
-	Name string
+	db          *sql.DB
+	ID          string
+	Name        string
 	Description string
 }
 
-
-func NewCategory(db *sql.DB) *Category{
+func NewCategory(db *sql.DB) *Category {
 	return &Category{db: db}
 }
 
-func (c *Category)Creat(name string, description string)(Category, error){
-	id :=  uuid.New().String()
+func (c *Category) Creat(name string, description string) (Category, error) {
+	id := uuid.New().String()
 
 	_, err := c.db.Exec("INSERT INTO categories (id, name, description) VALUES ($1,$2, $3)", id, name, description)
 	if err != nil {
 		return Category{}, err
 	}
-	return  Category{
-		ID: id,
-		Name: name,
+
+	return Category {
+		ID:          id,
+		Name:        name,
 		Description: description,
 	}, nil
+}
 
+
+func (c *Category) FindAll() ([]Category, error) {
+	rows, err := c.db.Query("select id, name, description from categories")
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	categories := []Category{}
+
+	for rows.Next(){
+		var category Category
+
+		if err := rows.Scan(&category.ID, &category.Name, &category.Description); err != nil {
+			return nil, err
+		}
+		categories = append(categories, category)
+
+		// var id, name, description string
+		// if err := rows.Scan(&id, &name, &description); err != nil {
+		// 	return nil, err
+		// }
+		// categories = append(categories, Category{ID: id, Name: name, Description: description})
+	}
+	return categories, nil
 }

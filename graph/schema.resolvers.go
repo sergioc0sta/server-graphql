@@ -14,14 +14,14 @@ import (
 // CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error) {
 	category, err := r.CategoryDB.Creat(input.Name, *input.Description)
-	if err != nil{
+	if err != nil {
 		return &model.Category{}, err
 	}
 
 	return &model.Category{
-		ID: category.ID,
+		ID:          category.ID,
 		Description: &category.Description,
-		Name: category.Name,
+		Name:        category.Name,
 	}, nil
 }
 
@@ -32,7 +32,23 @@ func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCous
 
 // Categories is the resolver for the categories field.
 func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
-	panic(fmt.Errorf("not implemented: Categories - categories"))
+	categories, err := r.CategoryDB.FindAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var categoriesModel []*model.Category
+
+	for _, categorie := range categories {
+		categoriesModel = append(categoriesModel, &model.Category{
+			ID:          categorie.ID,
+			Name:        categorie.Name,
+			Description: &categorie.Description,
+		})
+	}
+
+	return categoriesModel, nil
 }
 
 // Courses is the resolver for the courses field.
@@ -48,4 +64,3 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
