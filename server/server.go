@@ -25,7 +25,8 @@ func main() {
 		log.Fatal("Fail to open connection: %v", err)
 	}
 
-	categoryDb := database.NewCategory(db)
+	categoryDB := database.NewCategory(db)
+	courseDB := database.NewCourse(db)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -33,7 +34,8 @@ func main() {
 	}
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		CategoryDB: categoryDb,
+		CategoryDB: categoryDB,
+		CourseDB:   courseDB,
 	}}))
 
 	srv.AddTransport(transport.Options{})

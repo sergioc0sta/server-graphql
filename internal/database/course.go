@@ -31,10 +31,31 @@ func (c *Course) Create(name, description, categoryID string) (*Course, error) {
 	}
 
 	return &Course{
-		ID: id,
-		Name: name,
+		ID:          id,
+		Name:        name,
 		Description: description,
-		CategoryID: categoryID,
+		CategoryID:  categoryID,
 	}, nil
+}
 
+func (c *Course) FindAll() ([]Course, error) {
+	rows, err := c.db.Query("select id, name, description, category_id from courses")
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	courses := []Course{}
+
+	for rows.Next() {
+		var course Course
+
+		if err := rows.Scan(&course.ID, &course.Name, &course.Description, &course.CategoryID); err != nil {
+			return nil, err
+		}
+		courses = append(courses, course)
+	}
+
+	return courses, nil
 }
